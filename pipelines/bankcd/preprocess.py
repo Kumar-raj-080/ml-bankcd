@@ -3,22 +3,23 @@ import numpy as np
 import pandas as pd
 from time import gmtime, strftime
 import logging
-logging.info('bancd:preprocess.py starts')
+logging.info('bankcd:preprocess.py starts')
 
 # prefix = 'sagemaker/DEMO-xgboost-dm'
 prefix = "/opt/ml/processing"
-my_region = boto3.session.Session().region_name # set the region of the instance
-
+my_region = 'us-east-1' #boto3.session.Session().region_name # set the region of the instance
 bucket_name = 'tcb-bankcd' # <--- CHANGE THIS VARIABLE TO A UNIQUE NAME FOR YOUR BUCKET
+
 s3 = boto3.resource('s3')
-try:
-    if  my_region == 'us-east-1':
-      s3.create_bucket(Bucket=bucket_name)
-    else: 
-      s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={ 'LocationConstraint': my_region })
-    logging.info('S3 bucket created successfully')
-except Exception as e:
-    logging.error('S3 error: ',e)
+
+# try:
+#     if  my_region == 'us-east-1':
+#       s3.create_bucket(Bucket=bucket_name)
+#     else: 
+#       s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={ 'LocationConstraint': my_region })
+#     logging.info('S3 bucket created successfully')
+# except Exception as e:
+#     logging.error('S3 error: ',e)
 
 # Download the bank dataset as a csv file.
 try:
