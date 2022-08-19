@@ -1,24 +1,13 @@
-import boto3, re, sys, math, json, os, sagemaker, urllib.request
-from sagemaker import get_execution_role
+import boto3, os, urllib.request
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from IPython.display import Image
-from IPython.display import display
 from time import gmtime, strftime
-from sagemaker.predictor import csv_serializer
 import logging
+logging.info('bancd:preprocess.py starts')
 
-# Define IAM role
-role = get_execution_role()
 # prefix = 'sagemaker/DEMO-xgboost-dm'
 prefix = "/opt/ml/processing"
 my_region = boto3.session.Session().region_name # set the region of the instance
-
-# this line automatically looks for the XGBoost image URI and builds an XGBoost container.
-# xgboost_container = sagemaker.image_uris.retrieve("xgboost", my_region, "latest")
-# print("Success - the MySageMakerInstance is in the " + my_region + " region. You will use the " + xgboost_container + " container for your SageMaker endpoint.")
-
 
 bucket_name = 'tcb-bankcd' # <--- CHANGE THIS VARIABLE TO A UNIQUE NAME FOR YOUR BUCKET
 s3 = boto3.resource('s3')
@@ -56,3 +45,4 @@ logging.info('Success: pre-processed bank_clean.csv.')
 # Upload training data into S3 bucket
 boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'train/train.csv')).upload_file('/opt/ml/processing/train/train.csv')
 boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'train/test.csv')).upload_file('/opt/ml/processing/test/test.csv')
+logging.info('bankcd:preprocess.py ends')
