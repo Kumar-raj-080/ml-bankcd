@@ -40,7 +40,7 @@ except Exception as e:
 
 # Create train and test data sets and upload data sets to AWS directory
 train_data, test_data = np.split(model_data.sample(frac=1, random_state=1729), [int(0.7 * len(model_data))])
-logger.info(train_data.shape, test_data.shape)
+logger.info('shape {} {}'.format(train_data.shape, test_data.shape))
 pd.concat([train_data['y_yes'], train_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv("train.csv", index=False, header=False)
 pd.concat([test_data['y_yes'], test_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv("test.csv", index=False, header=False)
 
