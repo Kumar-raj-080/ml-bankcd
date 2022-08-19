@@ -41,12 +41,12 @@ except Exception as e:
 # Create train and test data sets and upload data sets to AWS directory
 train_data, test_data = np.split(model_data.sample(frac=1, random_state=1729), [int(0.7 * len(model_data))])
 logger.info(train_data.shape, test_data.shape)
-pd.concat([train_data['y_yes'], train_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv(f"{prefix}/train/train.csv", index=False, header=False)
-pd.concat([test_data['y_yes'], test_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv(f"{prefix}/test/test.csv", index=False, header=False)
+pd.concat([train_data['y_yes'], train_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv("train.csv", index=False, header=False)
+pd.concat([test_data['y_yes'], test_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv("test.csv", index=False, header=False)
 
 logger.info('Success: pre-processed bank_clean.csv.')
 
 # Upload training data into S3 bucket
-boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'train/train.csv')).upload_file(f"{prefix}/train/train.csv")
-boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'test/test.csv')).upload_file(f"{prefix}/test/test.csv")
+boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'train/train.csv')).upload_file("train.csv")
+boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'test/test.csv')).upload_file("test.csv")
 logger.info('bankcd:preprocess.py ends')
