@@ -1,4 +1,4 @@
-"""Example workflow pipeline script for abalone pipeline.
+"""Example workflow pipeline script for bankcd pipeline.
 
                                                . -ModelStep
                                               .
@@ -131,7 +131,7 @@ def get_pipeline(
     processing_instance_type="ml.m5.xlarge",
     training_instance_type="ml.m5.xlarge",
 ):
-    """Gets a SageMaker ML Pipeline instance working with on abalone data.
+    """Gets a SageMaker ML Pipeline instance working with on bankcd data.
 
     Args:
         region: AWS region to create and run the pipeline.
@@ -154,7 +154,7 @@ def get_pipeline(
     )
     input_data = ParameterString(
         name="InputDataUrl",
-        default_value=f"s3://sagemaker-servicecatalog-seedcode-{region}/dataset/abalone-dataset.csv",
+        default_value=f"s3://sagemaker-servicecatalog-seedcode-{region}/dataset/bankcd-dataset.csv",
     )
 
     # processing step for feature engineering
@@ -162,7 +162,7 @@ def get_pipeline(
         framework_version="0.23-1",
         instance_type=processing_instance_type,
         instance_count=processing_instance_count,
-        base_job_name=f"{base_job_prefix}/sklearn-abalone-preprocess",
+        base_job_name=f"{base_job_prefix}/sklearn-bankcd-preprocess",
         sagemaker_session=pipeline_session,
         role=role,
     )
@@ -194,7 +194,7 @@ def get_pipeline(
         instance_type=training_instance_type,
         instance_count=1,
         output_path=model_path,
-        base_job_name=f"{base_job_prefix}/abalone-train",
+        base_job_name=f"{base_job_prefix}/bankcd-train",
         sagemaker_session=pipeline_session,
         role=role,
     )
@@ -235,7 +235,7 @@ def get_pipeline(
         command=["python3"],
         instance_type=processing_instance_type,
         instance_count=1,
-        base_job_name=f"{base_job_prefix}/script-abalone-eval",
+        base_job_name=f"{base_job_prefix}/script-bankcd-eval",
         sagemaker_session=pipeline_session,
         role=role,
     )

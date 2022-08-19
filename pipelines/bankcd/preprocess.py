@@ -1,120 +1,58 @@
-"""Feature engineers the abalone dataset."""
-import argparse
-import logging
-import os
-import pathlib
-import requests
-import tempfile
-
-import boto3
+import boto3, re, sys, math, json, os, sagemaker, urllib.request
+from sagemaker import get_execution_role
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import Image
+from IPython.display import display
+from time import gmtime, strftime
+from sagemaker.predictor import csv_serializer
+import logging
 
-from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
+# Define IAM role
+role = get_execution_role()
+# prefix = 'sagemaker/DEMO-xgboost-dm'
+prefix = "/opt/ml/processing"
+my_region = boto3.session.Session().region_name # set the region of the instance
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
-
-
-# Since we get a headerless CSV file we specify the column names here.
-feature_columns_names = [
-    "sex",
-    "length",
-    "diameter",
-    "height",
-    "whole_weight",
-    "shucked_weight",
-    "viscera_weight",
-    "shell_weight",
-]
-label_column = "rings"
-
-feature_columns_dtype = {
-    "sex": str,
-    "length": np.float64,
-    "diameter": np.float64,
-    "height": np.float64,
-    "whole_weight": np.float64,
-    "shucked_weight": np.float64,
-    "viscera_weight": np.float64,
-    "shell_weight": np.float64,
-}
-label_column_dtype = {"rings": np.float64}
+# this line automatically looks for the XGBoost image URI and builds an XGBoost container.
+# xgboost_container = sagemaker.image_uris.retrieve("xgboost", my_region, "latest")
+# print("Success - the MySageMakerInstance is in the " + my_region + " region. You will use the " + xgboost_container + " container for your SageMaker endpoint.")
 
 
-def merge_two_dicts(x, y):
-    """Merges two dicts, returning a new copy."""
-    z = x.copy()
-    z.update(y)
-    return z
+bucket_name = 'tcb-bankcd' # <--- CHANGE THIS VARIABLE TO A UNIQUE NAME FOR YOUR BUCKET
+s3 = boto3.resource('s3')
+try:
+    if  my_region == 'us-east-1':
+      s3.create_bucket(Bucket=bucket_name)
+    else: 
+      s3.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={ 'LocationConstraint': my_region })
+    logging.info('S3 bucket created successfully')
+except Exception as e:
+    logging.error('S3 error: ',e)
 
+# Download the bank dataset as a csv file.
+try:
+    urllib.request.urlretrieve ("https://d1.awsstatic.com/tmt/build-train-deploy-machine-learning-model-sagemaker/bank_clean.27f01fbbdf43271788427f3682996ae29ceca05d.csv", "bank_clean.csv")
+    logging.info('Success: Data loaded into dataframe.')
+except Exception as e:
+  logging.error('Data load error: ',e)
 
-if __name__ == "__main__":
-    logger.debug("Starting preprocessing.")
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--input-data", type=str, required=True)
-    args = parser.parse_args()
+# Read downloaded csv as a dataframe.
+try:
+    model_data = pd.read_csv('./bank_clean.csv',index_col=0)
+    logging.info('Success: Data loaded into dataframe.')
+except Exception as e:
+    logging.error('Data load error ', e)
 
-    base_dir = "/opt/ml/processing"
-    pathlib.Path(f"{base_dir}/data").mkdir(parents=True, exist_ok=True)
-    input_data = args.input_data
-    bucket = input_data.split("/")[2]
-    key = "/".join(input_data.split("/")[3:])
+# Create train and test data sets and upload data sets to AWS directory
+train_data, test_data = np.split(model_data.sample(frac=1, random_state=1729), [int(0.7 * len(model_data))])
+print(train_data.shape, test_data.shape)
+pd.concat([train_data['y_yes'], train_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv(f"{prefix}/train/train.csv", index=False, header=False)
+pd.concat([test_data['y_yes'], test_data.drop(['y_no', 'y_yes'], axis=1)], axis=1).to_csv(f"{prefix}/test/test.csv", index=False, header=False)
 
-    logger.info("Downloading data from bucket: %s, key: %s", bucket, key)
-    fn = f"{base_dir}/data/abalone-dataset.csv"
-    s3 = boto3.resource("s3")
-    s3.Bucket(bucket).download_file(key, fn)
+logging.info('Success: pre-processed bank_clean.csv.')
 
-    logger.debug("Reading downloaded data.")
-    df = pd.read_csv(
-        fn,
-        header=None,
-        names=feature_columns_names + [label_column],
-        dtype=merge_two_dicts(feature_columns_dtype, label_column_dtype),
-    )
-    os.unlink(fn)
-
-    logger.debug("Defining transformers.")
-    numeric_features = list(feature_columns_names)
-    numeric_features.remove("sex")
-    numeric_transformer = Pipeline(
-        steps=[("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]
-    )
-
-    categorical_features = ["sex"]
-    categorical_transformer = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
-            ("onehot", OneHotEncoder(handle_unknown="ignore")),
-        ]
-    )
-
-    preprocess = ColumnTransformer(
-        transformers=[
-            ("num", numeric_transformer, numeric_features),
-            ("cat", categorical_transformer, categorical_features),
-        ]
-    )
-
-    logger.info("Applying transforms.")
-    y = df.pop("rings")
-    X_pre = preprocess.fit_transform(df)
-    y_pre = y.to_numpy().reshape(len(y), 1)
-
-    X = np.concatenate((y_pre, X_pre), axis=1)
-
-    logger.info("Splitting %d rows of data into train, validation, test datasets.", len(X))
-    np.random.shuffle(X)
-    train, validation, test = np.split(X, [int(0.7 * len(X)), int(0.85 * len(X))])
-
-    logger.info("Writing out datasets to %s.", base_dir)
-    pd.DataFrame(train).to_csv(f"{base_dir}/train/train.csv", header=False, index=False)
-    pd.DataFrame(validation).to_csv(
-        f"{base_dir}/validation/validation.csv", header=False, index=False
-    )
-    pd.DataFrame(test).to_csv(f"{base_dir}/test/test.csv", header=False, index=False)
+# Upload training data into S3 bucket
+boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'train/train.csv')).upload_file('/opt/ml/processing/train/train.csv')
+boto3.Session().resource('s3').Bucket(bucket_name).Object(os.path.join(prefix, 'train/test.csv')).upload_file('/opt/ml/processing/test/test.csv')
