@@ -184,7 +184,7 @@ def get_pipeline(
     sklearn_processor = SKLearnProcessor(
         framework_version="0.23-1",
         instance_type=training_instance_type,
-        instance_count=processing_instance_count,
+        instance_count=1,
         base_job_name=f"{base_job_prefix}/bankcd-train",
         sagemaker_session=pipeline_session,
         role=role,
@@ -199,7 +199,7 @@ def get_pipeline(
         code=os.path.join(BASE_DIR, "training.py"),
         # arguments=["--input-data", input_data],
     )
-    step_train = TrainingStep(
+    step_train = ProcessingStep(
         name="TrainBankCDModel",
         step_args=step_args,
     )
