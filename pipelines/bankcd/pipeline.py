@@ -180,68 +180,79 @@ def get_pipeline(
         step_args=step_args,
     )
 
-    # step_args = sklearn_processor.run(
-    #     # outputs=[
-    #     #     ProcessingOutput(output_name="train", source="/opt/ml/processing/train"),
-    #     #     ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
-    #     #     ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
-    #     # ],
-    #     code=os.path.join(BASE_DIR, "training.py"),
-    #     # arguments=["--input-data", input_data],
-    # )
-    # step_process = TrainingStep(
-    #     name="TrainBankCDModel",
-    #     step_args=step_args,
-    # )
-
-    # training step for generating model artifacts
-    model_path = f"s3://{sagemaker_session.default_bucket()}/{base_job_prefix}/BankCDTrain"
-    image_uri = sagemaker.image_uris.retrieve(
-        framework="xgboost",
-        region=region,
-        version="1.0-1",
-        py_version="py3",
+    # processing step for feature engineering
+    sklearn_processor = SKLearnProcessor(
+        framework_version="0.23-1",
         instance_type=training_instance_type,
-    )
-    xgb_train = Estimator(
-        image_uri=image_uri,
-        instance_type=training_instance_type,
-        instance_count=1,
-        output_path=model_path,
+        instance_count=processing_instance_count,
         base_job_name=f"{base_job_prefix}/bankcd-train",
         sagemaker_session=pipeline_session,
         role=role,
     )
-    xgb_train.set_hyperparameters(
-        objective="reg:linear",
-        num_round=50,
-        max_depth=5,
-        eta=0.2,
-        gamma=4,
-        min_child_weight=6,
-        subsample=0.7,
-        silent=0,
-    )
-    step_args = xgb_train.fit(
-        inputs={
-            "train": TrainingInput(
-                s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
-                    "train"
-                ].S3Output.S3Uri,
-                content_type="text/csv",
-            ),
-            "validation": TrainingInput(
-                s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
-                    "validation"
-                ].S3Output.S3Uri,
-                content_type="text/csv",
-            ),
-        },
+
+    step_args = sklearn_processor.run(
+        # outputs=[
+        #     ProcessingOutput(output_name="train", source="/opt/ml/processing/train"),
+        #     ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
+        #     ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
+        # ],
+        code=os.path.join(BASE_DIR, "training.py"),
+        # arguments=["--input-data", input_data],
     )
     step_train = TrainingStep(
         name="TrainBankCDModel",
         step_args=step_args,
     )
+    
+
+    # # training step for generating model artifacts
+    # model_path = f"s3://{sagemaker_session.default_bucket()}/{base_job_prefix}/BankCDTrain"
+    # image_uri = sagemaker.image_uris.retrieve(
+    #     framework="xgboost",
+    #     region=region,
+    #     version="1.0-1",
+    #     py_version="py3",
+    #     instance_type=training_instance_type,
+    # )
+    # xgb_train = Estimator(
+    #     image_uri=image_uri,
+    #     instance_type=training_instance_type,
+    #     instance_count=1,
+    #     output_path=model_path,
+    #     base_job_name=f"{base_job_prefix}/bankcd-train",
+    #     sagemaker_session=pipeline_session,
+    #     role=role,
+    # )
+    # xgb_train.set_hyperparameters(
+    #     objective="reg:linear",
+    #     num_round=50,
+    #     max_depth=5,
+    #     eta=0.2,
+    #     gamma=4,
+    #     min_child_weight=6,
+    #     subsample=0.7,
+    #     silent=0,
+    # )
+    # step_args = xgb_train.fit(
+    #     inputs={
+    #         "train": TrainingInput(
+    #             s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
+    #                 "train"
+    #             ].S3Output.S3Uri,
+    #             content_type="text/csv",
+    #         ),
+    #         "validation": TrainingInput(
+    #             s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
+    #                 "validation"
+    #             ].S3Output.S3Uri,
+    #             content_type="text/csv",
+    #         ),
+    #     },
+    # )
+    # step_train = TrainingStep(
+    #     name="TrainBankCDModel",
+    #     step_args=step_args,
+    # )
 
     # processing step for evaluation
     script_eval = ScriptProcessor(
