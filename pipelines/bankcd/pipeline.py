@@ -189,7 +189,7 @@ def get_pipeline(
         code=os.path.join(BASE_DIR, "training.py"),
         # arguments=["--input-data", input_data],
     )
-    step_process = ProcessingStep(
+    step_process = TrainingStep(
         name="TrainBankCDModel",
         step_args=step_args,
     )
