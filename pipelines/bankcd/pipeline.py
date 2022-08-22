@@ -180,19 +180,19 @@ def get_pipeline(
         step_args=step_args,
     )
 
-    step_args = sklearn_processor.run(
-        # outputs=[
-        #     ProcessingOutput(output_name="train", source="/opt/ml/processing/train"),
-        #     ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
-        #     ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
-        # ],
-        code=os.path.join(BASE_DIR, "training.py"),
-        # arguments=["--input-data", input_data],
-    )
-    step_process = TrainingStep(
-        name="TrainBankCDModel",
-        step_args=step_args,
-    )
+    # step_args = sklearn_processor.run(
+    #     # outputs=[
+    #     #     ProcessingOutput(output_name="train", source="/opt/ml/processing/train"),
+    #     #     ProcessingOutput(output_name="validation", source="/opt/ml/processing/validation"),
+    #     #     ProcessingOutput(output_name="test", source="/opt/ml/processing/test"),
+    #     # ],
+    #     code=os.path.join(BASE_DIR, "training.py"),
+    #     # arguments=["--input-data", input_data],
+    # )
+    # step_process = TrainingStep(
+    #     name="TrainBankCDModel",
+    #     step_args=step_args,
+    # )
 
     # # training step for generating model artifacts
     # model_path = f"s3://{sagemaker_session.default_bucket()}/{base_job_prefix}/BankCDTrain"
