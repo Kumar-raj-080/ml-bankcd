@@ -17,13 +17,13 @@ REGION = os.environ['AWS_DEFAULT_REGION']
 # Replace with your IAM role arn that has enough access (e.g. SageMakerFullAccess)
 IAM_ROLE_NAME = os.environ['IAM_ROLE_NAME']
 GITHUB_SHA = os.environ['GITHUB_SHA']
-ACCOUNT_ID = session.boto_session.client(
-    'sts').get_caller_identity()['Account']
+# ACCOUNT_ID = session.boto_session.client(
+#    'sts').get_caller_identity()['Account']
 # Replace with your desired training instance
 training_instance = 'ml.m5.large'
 
 # Replace with your data s3 path
-training_data_s3_uri = 's3://{}/{}/boston-housing-training.csv'.format(
+training_data_s3_uri = 's3://{}/{}/train.csv'.format(
     BUCKET_NAME, PREFIX)
 validation_data_s3_uri = 's3://{}/{}/boston-housing-validation.csv'.format(
     BUCKET_NAME, PREFIX)
@@ -36,7 +36,7 @@ base_job_name = 'boston-housing-model'
 
 # Define estimator object
 boston_estimator = Estimator(
-    image_uri=f'{ACCOUNT_ID}.dkr.ecr.{REGION}.amazonaws.com/my-app:latest',
+    image_uri=f'224363374053.dkr.ecr.us-east-1.amazonaws.com/aws-sagemaker-mlops-tcb:latest',
     role=IAM_ROLE_NAME ,
     instance_count=1,
     instance_type=training_instance,
