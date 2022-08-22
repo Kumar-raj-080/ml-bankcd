@@ -11,17 +11,17 @@ import botocore
 initial_instance_count = 1
 endpoint_instance_type = 'ml.m5.large'
 
-BUCKET_NAME = 'sample-sagemaker-cicd-tuto1'
-PREFIX = 'bouston-housing-regression'
-OBJECT_KEY = f'{PREFIX}/reports.csv'
+BUCKET_NAME = 'tcb-bankcd'
+PREFIX = 'xgb/train'
+OBJECT_KEY = f'{PREFIX}/train.csv'
 
 s3 = boto3.resource('s3')
 
 try:
-       s3.Bucket(BUCKET_NAME).download_file(OBJECT_KEY, 'reports.csv')
+       s3.Bucket(BUCKET_NAME).download_file(OBJECT_KEY, 'train.csv')
 
        # Load reports df
-       reports_df = pd.read_csv('reports.csv')
+       reports_df = pd.read_csv('train.csv')
        print(reports_df)
 
 except botocore.exceptions.ClientError as e:
