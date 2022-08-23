@@ -16,9 +16,9 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ASIATIPIZMXSTZPDQGO7
-        aws-secret-access-key: 4YuUyFuoO4nvLnb1X50g2CkicV5OGtLwI/sd3WMV
-        aws-session-token : IQoJb3JpZ2luX2VjEAMaCXVzLWVhc3QtMSJGMEQCIAqzY1QRsHmglVUyB44JkRQ1wHIA9Y3YeTwA7jeTZHJWAiBI0QQt42DdtePlWOZpzN7sLloNFX0mzZfV15zW1EGcyyqpAwh7EAAaDDIyNDM2MzM3NDA1MyIM8aAla1HydTG6maIKKoYDt+ucxZ08LqN+Xv9wBDktFdlvWWCw/K+8TfHCnvcslAsqBVHLQjMqlR2yFZ1j+Wiv3iDf3647n4y7UOKfgigiysku1cXTDamS8os0PPAl/MZxM3MZvbbZ+UiLPYoplV8fVFgGsSoLVpBoS0DfYJwhNro65iiocufxqOUoAkqSDepDejq00LwQ+Q2uGXl2dsBK15kgWdDaPyH2GXNGONRBnL+ye/VyeU629ar4pXNB2i714QZBeAIWtOt0Ye0hRdkrvG8ZW4Y+BWGkxnDds3EsU9ks8rqNwb/J1NMqonqk8cwXvwRZhlEMgpJXsinvFZNo0v8P/Dz/pPsOY4jhgn9unNvGLHg5vENYbmKJxiyC9ZUggjNq1eSSA+WRsjyYDQ40VIfTbM8zcZGcx36gOtbeXTm89tAEyN/+VG3H4bGohKNiVhnUpXYAm3WNhbkUZxhohsoavsav1YYdBB4aDeC8uLxBAkSTT6eD/086cm/W5+AzSJHIHLP2J7+Tmbem7Ul2KasS3ypWMPKMj5gGOqcBVyrZgV5F9snfI16fu0l9+4g11BTKHUGDzGALJ38/BI2viZznioGUjlW/AME/gZnnRZCjadk/CL52V0wQGfC/w4w1lBonyqaL/RrFM24nnWVI5tcpsYqCGoCj0B6o883vbXSkPMXDh2acBG3F4//pG2RMDZ0Fu86q8B0DqbAXMmwNYMOh/zrPgq3sf0/eErg8jwEPGKzjSkbDvuiLr63T05IqRXS3bYM=
+        aws-access-key-id: ASIATIPIZMXSU3WGRMMC
+        aws-secret-access-key: qSBL4Zl4a08KPVdW9eeCCXh9QTNDzii4/QnQDlNJ
+        aws-session-token: IQoJb3JpZ2luX2VjEBQaCXVzLWVhc3QtMSJHMEUCIC8vRgdkAeXo0K1YxH8VtncYQMTty5CVXLNaZaKLJJ0aAiEA3XHfwIz+O4sDBvgu3Yyh9kQ+cOsLzffBbpEklQVkArUqsgMIjf//////////ARAAGgwyMjQzNjMzNzQwNTMiDLlDjObh5EuEuYaNqCqGA3QDA6gfRhxO14Mtry6TKrLpUc5tjM62rWgkGv6pxTq2vS4UYZkXRyixMLp0N5XitTkYVJhPMIZD8YgWIARp32SeXI1vMEePbbeCBaKOJIWWrkXm4aHAHytkEw2GQRjGCeq2um8wYU7E409IPvgobaKl43zv6+f5OiOHGOSTT9XXk1IoIXG7PYh6GX98p0wWlj/OF1SOJdwGTCh3UNLaTIJacQ4YEx7cZD/NhoANRZTx5EZLza2waudeO79++oAzAaFu8wAK9YZwMKK0igHcahVOXH4NcmxWKruJ1mWAAdBnfciJAxslrlTawTrFL8TlFYWEC3DfROmOnFgV+WyeQGpGxymDWyLT8AW36qnFC+DC9xOjldPwZOjJLMzt76PTYSEGREi75gx4g4qPkwUDOpvx4IGMoGrTk6S9JJcSav4trruo+85dus5VMtDyxg3xWIUs1FKEzQy4ASeqv1dugW7/Rn/kBov+nm2obOGVSmT/2CKP7EngCxkpagpmLCTYTvM/IwzomDDngJOYBjqmAaVYzkw8qfrEOBOD4lSCwJYLVaC6pwN17IlRPvI89cWVvkTQoOBzo1TRrIP4lQAtSk8yacQnMXGs3GUW24+UWdn5HmZuIVP5ibyfFoIma45zzy38oDlYQ8DbH3pdX5+aIc8RRjh++DqTMpHb76vI3BneOUDQXWkF+zjT0w3ZUv/KIYZOy7fGA9uDzzfXE0zP4nJCmhmx0gRWPgnNwvuf1Yr0P/NTzNA=
         aws-region: us-east-1
 
     # see: https://github.com/aws-actions/amazon-ecr-login
