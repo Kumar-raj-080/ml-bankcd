@@ -181,16 +181,23 @@ def get_pipeline(
     )
 
     # training step for feature engineering
-    script_eval = ScriptProcessor(
+    image_uri = sagemaker.image_uris.retrieve(
+        framework="xgboost",
+        region=region,
+        version="1.0-1",
+        py_version="py3",
+        instance_type=training_instance_type,
+    )
+    xgb_train = ScriptProcessor(
         image_uri=image_uri,
         command=["python3"],
-        instance_type=processing_instance_type,
+        instance_type=training_instance_type,
         instance_count=1,
         base_job_name=f"{base_job_prefix}/bankcd-train",
         sagemaker_session=pipeline_session,
         role=role,
     )
-    step_args = script_eval.run(
+    step_args = xgb_train.run(
         # inputs=[
         #     ProcessingInput(
         #         source=step_train.properties.ModelArtifacts.S3ModelArtifacts,
